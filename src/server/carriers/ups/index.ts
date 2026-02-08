@@ -5,6 +5,12 @@ export {
 } from "./oauthClient";
 
 export {
+  UpsCarrier,
+  type UpsCarrierConfig,
+  type RateHttpClient,
+} from "./upsCarrier";
+
+export {
   mapRateRequestToUpsPayload,
   type UpsRateRequestPayload,
   type UpsAddress,
