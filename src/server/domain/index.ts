@@ -17,3 +17,15 @@ export {
   type Dimensions,
   type Weight,
 } from "./package";
+
+export {
+  rateRequestSchema,
+  parseRateRequest,
+  type RateRequest,
+} from "./rate-request";
+
+export {
+  rateQuoteSchema,
+  parseRateQuote,
+  type RateQuote,
+} from "./rate-quote";
