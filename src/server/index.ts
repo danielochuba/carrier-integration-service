@@ -4,6 +4,7 @@
 
 export * from "./config";
 export * from "./domain";
+export * from "./validations";
 export * from "./carriers";
 export * from "./services";
 export * from "./http";
