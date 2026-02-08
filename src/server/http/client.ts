@@ -1,7 +1,16 @@
 /**
  * Reusable HTTP client abstraction.
  * Uses native fetch; configurable base URL, timeout, and headers.
+ * Normalizes network errors, timeouts, and non-2xx responses into carrier integration errors.
  */
+
+import {
+  CarrierTimeoutError,
+  CarrierUnavailableError,
+  CarrierRateFetchError,
+  CarrierValidationError,
+  isCarrierIntegrationError,
+} from "@/src/server/errors";
 
 export interface HttpClientConfig {
   baseUrl: string;
@@ -45,10 +54,65 @@ export class HttpClient {
         body,
         signal: controller.signal,
       });
-      return response;
-    } finally {
       clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        await this.throwForNon2xx(response);
+      }
+      return response;
+    } catch (error) {
+      clearTimeout(timeoutId);
+      if (isCarrierIntegrationError(error)) throw error;
+      this.throwForFetchError(error);
     }
+  }
+
+  private async throwForNon2xx(response: Response): Promise<never> {
+    const details: Record<string, unknown> = {
+      statusCode: response.status,
+      statusText: response.statusText,
+    };
+    try {
+      const text = await response.text();
+      if (text) {
+        try {
+          details.responseBody = JSON.parse(text) as unknown;
+        } catch {
+          details.responseBody = text;
+        }
+      }
+    } catch {
+      // Ignore body read failures
+    }
+
+    if (response.status >= 400 && response.status < 500) {
+      throw new CarrierValidationError(
+        `Request failed with status ${response.status}`,
+        details
+      );
+    }
+    if (response.status >= 500) {
+      throw new CarrierUnavailableError(
+        `Carrier returned server error: ${response.status}`,
+        details
+      );
+    }
+    throw new CarrierRateFetchError(
+      `Request failed with status ${response.status}`,
+      details
+    );
+  }
+
+  private throwForFetchError(error: unknown): never {
+    if (error instanceof Error && error.name === "AbortError") {
+      throw new CarrierTimeoutError("Request timed out", {
+        cause: error.message,
+      });
+    }
+    throw new CarrierUnavailableError(
+      "Network request failed",
+      error instanceof Error ? { cause: error.message } : undefined
+    );
   }
 
   async get(pathOrUrl: string, options?: Omit<RequestOptions, "method" | "path" | "url">): Promise<Response> {
