@@ -1,0 +1,3 @@
+/**
+ * Domain types and logic.
+ */
