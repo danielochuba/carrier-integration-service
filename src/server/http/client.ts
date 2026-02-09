@@ -1,9 +1,3 @@
-/**
- * Reusable HTTP client abstraction.
- * Uses native fetch; configurable base URL, timeout, and headers.
- * Normalizes network errors, timeouts, and non-2xx responses into carrier integration errors.
- */
-
 import {
   CarrierTimeoutError,
   CarrierUnavailableError,

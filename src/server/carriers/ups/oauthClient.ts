@@ -1,9 +1,3 @@
-/**
- * UPS OAuth 2.0 client-credentials flow.
- * Token acquisition, caching, and refresh on expiry.
- * HTTP client is injected for testability.
- */
-
 import { CarrierUnavailableError } from "@/src/server/errors";
 
 const REFRESH_BUFFER_MS = 60_000;
@@ -14,10 +8,6 @@ export interface UpsOAuthConfig {
   tokenUrl: string;
 }
 
-/**
- * Minimal HTTP client interface for token requests.
- * Inject a stub in tests to avoid real HTTP calls.
- */
 export interface OAuthHttpClient {
   post(
     url: string,
@@ -47,10 +37,6 @@ export class UpsOAuthClient {
     this.httpClient = httpClient;
   }
 
-  /**
-   * Returns a valid access token, fetching and caching as needed.
-   * Refreshes when the token is expired or within the refresh buffer.
-   */
   async getAccessToken(): Promise<string> {
     if (this.isTokenValid()) {
       return this.cache!.accessToken;
@@ -108,9 +94,6 @@ export class UpsOAuthClient {
     return this.cache.accessToken;
   }
 
-  /**
-   * Clears the cached token. Useful for testing or forcing refresh.
-   */
   clearCache(): void {
     this.cache = null;
     this.fetchPromise = null;

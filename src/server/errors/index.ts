@@ -1,7 +1,3 @@
-/**
- * Structured errors for server use and API responses.
- */
-
 export {
   CarrierErrorCode,
   CarrierIntegrationError,

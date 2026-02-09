@@ -1,7 +1,3 @@
-/**
- * Typed environment configuration loaded from process.env.
- */
-
 export type NodeEnv = "development" | "production" | "test";
 
 export interface Env {
@@ -27,10 +23,6 @@ function parseNodeEnv(value: string | undefined): NodeEnv {
   return "development";
 }
 
-/**
- * Loads and validates environment configuration from process.env.
- * Throws if a required variable is missing.
- */
 export function loadEnv(): Env {
   const raw = process.env;
 

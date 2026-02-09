@@ -1,8 +1,3 @@
-/**
- * Integration test for UpsCarrier.
- * Stubs the UPS rate API and OAuth; verifies normalized RateQuote output.
- */
-
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   CarrierValidationError,

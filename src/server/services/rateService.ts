@@ -1,8 +1,3 @@
-/**
- * Orchestrates one or more Carrier implementations.
- * Aggregates and returns normalized rate quotes.
- */
-
 import type { Carrier } from "@/ports/carrier";
 import type { RateQuote, RateRequest } from "@/src/server/domain";
 
@@ -17,9 +12,6 @@ export class RateService {
     this.carriers = config.carriers;
   }
 
-  /**
-   * Fetches rates from all configured carriers and returns aggregated quotes.
-   */
   async getRates(request: RateRequest): Promise<RateQuote[]> {
     if (this.carriers.length === 0) return [];
 

@@ -1,8 +1,3 @@
-/**
- * Structured, serializable errors for carrier integrations.
- * Safe to return to API clients.
- */
-
 export const CarrierErrorCode = {
   Validation: "CARRIER_VALIDATION",
   Unavailable: "CARRIER_UNAVAILABLE",
@@ -13,19 +8,12 @@ export const CarrierErrorCode = {
 export type CarrierErrorCodeType =
   (typeof CarrierErrorCode)[keyof typeof CarrierErrorCode];
 
-/**
- * Serializable shape returned to API clients.
- */
 export interface SerializedCarrierError {
   code: CarrierErrorCodeType;
   message: string;
   details?: Record<string, unknown>;
 }
 
-/**
- * Base error for carrier integrations.
- * Use toJSON() for API responses.
- */
 export class CarrierIntegrationError extends Error {
   readonly code: CarrierErrorCodeType;
   readonly details?: Record<string, unknown>;

@@ -1,7 +1,3 @@
-/**
- * HTTP layer (routes, handlers, middleware).
- */
-
 export {
   HttpClient,
   createHttpClient,

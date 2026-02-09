@@ -1,8 +1,3 @@
-/**
- * Converts raw UPS Rating API responses into normalized RateQuote domain models.
- * Handles missing or malformed fields defensively; skips invalid entries.
- */
-
 import type { RateQuote } from "@/src/server/domain";
 
 const CARRIER_ID = "ups";
@@ -74,11 +69,6 @@ function toRatedShipmentArray(
   return Array.isArray(rated) ? rated : [rated];
 }
 
-/**
- * Maps raw UPS rate response into RateQuote[].
- * Returns empty array for null, undefined, or structurally invalid input.
- * Skips individual rated shipments that lack required fields.
- */
 export function mapUpsResponseToRateQuotes(input: unknown): RateQuote[] {
   if (input === null || input === undefined || typeof input !== "object") {
     return [];
