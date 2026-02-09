@@ -1,7 +1,3 @@
-/**
- * Domain types and logic.
- */
-
 export {
   addressSchema,
   parseAddress,

@@ -1,8 +1,3 @@
-/**
- * UPS carrier adapter implementing the Carrier port.
- * Validates input, obtains OAuth token, calls UPS rate endpoint, returns normalized RateQuote objects.
- */
-
 import type { Carrier } from "@/ports/carrier";
 import type { RateQuote, RateRequest } from "@/src/server/domain";
 import { CarrierRateFetchError } from "@/src/server/errors";
@@ -18,10 +13,6 @@ export interface UpsCarrierConfig {
   ratingPath?: string;
 }
 
-/**
- * HTTP client interface for rate requests.
- * HttpClient satisfies this; inject a stub in tests.
- */
 export interface RateHttpClient {
   post(
     path: string,
@@ -50,7 +41,7 @@ export class UpsCarrier implements Carrier {
     const payload = mapRateRequestToUpsPayload(validated);
     const token = await this.oauthClient.getAccessToken();
 
-    const response = await this.httpClient.post(this.ratingPath, payload, {
+    const response = await this.httpClient.post(this.ratingPath, payload as unknown as Record<string, unknown>, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",

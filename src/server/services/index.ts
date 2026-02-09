@@ -1,7 +1,3 @@
-/**
- * Application services.
- */
-
 export {
   RateService,
   type RateServiceConfig,

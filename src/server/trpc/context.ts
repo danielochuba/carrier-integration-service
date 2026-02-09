@@ -1,8 +1,3 @@
-/**
- * tRPC request context.
- * Extend with session, database, etc. as needed.
- */
-
 import type { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 import { rateService } from "./deps";
 

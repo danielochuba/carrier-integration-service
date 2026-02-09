@@ -1,7 +1,3 @@
-/**
- * Typed environment configuration loaded from process.env.
- */
-
 export type NodeEnv = "development" | "production" | "test";
 
 export interface Env {
@@ -27,15 +23,12 @@ function parseNodeEnv(value: string | undefined): NodeEnv {
   return "development";
 }
 
-/**
- * Loads and validates environment configuration from process.env.
- * Throws if a required variable is missing.
- */
 export function loadEnv(): Env {
   const raw = process.env;
 
   for (const key of REQUIRED_KEYS) {
-    if (raw[key] === undefined || raw[key] === "") {
+    const value: string | undefined = raw[key];
+    if (value === undefined || value === "") {
       throw new Error(`Missing required environment variable: ${key}`);
     }
   }

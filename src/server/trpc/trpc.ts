@@ -1,7 +1,3 @@
-/**
- * tRPC initialization and procedure helpers.
- */
-
 import { initTRPC } from "@trpc/server";
 import type { Context } from "./context";
 

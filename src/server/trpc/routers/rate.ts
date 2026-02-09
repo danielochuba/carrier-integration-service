@@ -1,8 +1,3 @@
-/**
- * Rate tRPC router.
- * Thin, framework-only procedure; validation and logic in domain/validations.
- */
-
 import { procedure, router } from "../trpc";
 import { rateRequestSchema } from "@/src/server/validations";
 

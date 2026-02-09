@@ -1,7 +1,3 @@
-/**
- * Server entry and re-exports.
- */
-
 export * from "./config";
 export * from "./domain";
 export * from "./errors";

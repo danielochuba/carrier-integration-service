@@ -1,8 +1,3 @@
-/**
- * Integration test for UpsCarrier.
- * Stubs the UPS rate API and OAuth; verifies normalized RateQuote output.
- */
-
 import { describe, it, expect, beforeEach } from "vitest";
 import {
   CarrierValidationError,
@@ -120,6 +115,61 @@ describe("UpsCarrier", () => {
 
     expect(quotes[0]!.amount).toBe(15.99);
     expect(quotes[1]!.amount).toBe(42.5);
+  });
+
+  it("builds correct UPS request payload from domain RateRequest", async () => {
+    let capturedPath: string | null = null;
+    let capturedBody: Record<string, unknown> | null = null;
+
+    const captureStub: RateHttpClient = {
+      post: async (path, body, _options) => {
+        capturedPath = path;
+        capturedBody = body as Record<string, unknown>;
+        return new Response(JSON.stringify(STUB_UPS_RATE_RESPONSE), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      },
+    };
+
+    const carrier = new UpsCarrier({ oauthClient }, captureStub);
+    const requestWithService: RateRequest = {
+      ...VALID_RATE_REQUEST,
+      serviceLevel: "03",
+    };
+
+    await carrier.getRates(requestWithService);
+
+    expect(capturedPath).toBe("/rating/v2409/Shop");
+    expect(capturedBody).not.toBeNull();
+    if (capturedBody === null) throw new Error("unreachable");
+    const body: Record<string, unknown> = capturedBody;
+    const rateReq = body.RateRequest as Record<string, unknown>;
+    expect(rateReq).toBeDefined();
+    const shipment = rateReq.Shipment as Record<string, unknown>;
+    expect(shipment).toBeDefined();
+
+    const shipper = shipment.Shipper as Record<string, unknown>;
+    expect(shipper.Name).toBe("123 Origin St");
+    const shipperAddr = (shipper.Address as Record<string, unknown>).AddressLine as string[];
+    expect(shipperAddr).toContain("123 Origin St");
+    expect((shipper.Address as Record<string, unknown>).PostalCode).toBe("10001");
+    expect((shipper.Address as Record<string, unknown>).CountryCode).toBe("US");
+
+    const shipTo = shipment.ShipTo as Record<string, unknown>;
+    expect((shipTo.Address as Record<string, unknown>).PostalCode).toBe("90001");
+
+    expect(shipment.Service).toEqual({ Code: "03", Description: "03" });
+    expect(shipment.NumOfPieces).toBe("1");
+
+    const pkg = (Array.isArray(shipment.Package) ? shipment.Package[0] : shipment.Package) as Record<string, unknown>;
+    expect(pkg).toBeDefined();
+    const weight = pkg.PackageWeight as Record<string, unknown>;
+    expect(weight.Weight).toBe("5");
+    const dims = pkg.Dimensions as Record<string, unknown>;
+    expect(dims.Length).toBe("10");
+    expect(dims.Width).toBe("8");
+    expect(dims.Height).toBe("6");
   });
 
   it("returns empty array when UPS response has no RatedShipment", async () => {

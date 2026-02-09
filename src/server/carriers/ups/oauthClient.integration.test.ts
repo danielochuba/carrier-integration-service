@@ -1,8 +1,3 @@
-/**
- * Integration tests for UpsOAuthClient.
- * Verifies OAuth token reuse and refresh using stubbed HTTP responses.
- */
-
 import { describe, it, expect, vi } from "vitest";
 import { UpsOAuthClient } from "./oauthClient";
 import type { OAuthHttpClient } from "./oauthClient";

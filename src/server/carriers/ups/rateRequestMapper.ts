@@ -1,14 +1,8 @@
-/**
- * Converts RateRequest domain model to UPS Rating API payload.
- * Pure transformation logic; no HTTP or auth concerns.
- * Based on UPS Rating API (RATERequestWrapper schema).
- */
-
 import type { Address, Package, RateRequest } from "@/src/server/domain";
 
-const PACKAGING_TYPE_CODE = "02"; // Package
+const PACKAGING_TYPE_CODE = "02";
 const PACKAGING_TYPE_DESC = "Package";
-const PAYMENT_TYPE = "01"; // Transportation
+const PAYMENT_TYPE = "01";
 const WEIGHT_LBS = "LBS";
 const WEIGHT_KGS = "KGS";
 const DIM_IN = "IN";
@@ -112,9 +106,6 @@ function mapPackageToUps(pkg: Package): UpsPackage {
   };
 }
 
-/**
- * Maps a RateRequest domain model to the UPS Rating API request payload.
- */
 export function mapRateRequestToUpsPayload(request: RateRequest): UpsRateRequestPayload {
   const originAddr = mapAddressToUps(request.origin);
   const destAddr = mapAddressToUps(request.destination);
