@@ -17,6 +17,7 @@ A backend-only [Next.js](https://nextjs.org) service for shipping carrier integr
 - [💻 Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Setup](#setup)
+  - [Branching (Gitflow)](#branching-gitflow)
   - [Install](#install)
   - [Usage](#usage)
   - [Run tests](#run-tests)
@@ -26,7 +27,6 @@ A backend-only [Next.js](https://nextjs.org) service for shipping carrier integr
 - [🤝 Contributing](#contributing)
 - [⭐️ Show your support](#show-your-support)
 - [🙏 Acknowledgements](#acknowledgements)
-- [📝 License](#license)
 
 ---
 
@@ -244,6 +244,16 @@ git clone https://github.com/danielochuba/carrier-integration-service.git
 cd carrier-integration-service
 ```
 
+### Branching (Gitflow) <a id="branching-gitflow"></a>
+
+This project uses [Gitflow](https://www.atlassian.com/git/tutorials/comparing-workflows/gitflow-workflow) for branch management:
+
+- **`main`** — Production-ready code; always deployable.
+- **`develop`** — Integration branch for completed features and fixes.
+- **`feature/*`** — New work (e.g. `feature/ups-carrier`, `feature/fedex-carrier`). Branch from `develop`; merge back into `develop` when done.
+- **`release/*`** — Preparation for a production release (version bumps, docs). Branch from `develop`; merge into `main` and back into `develop`.
+- **`hotfix/*`** — Urgent production fixes. Branch from `main`; merge into `main` and `develop`.
+
 ### Install <a id="install"></a>
 
 Install dependencies:
@@ -290,22 +300,12 @@ npm run test:watch
 
 Coverage includes integration tests for the UPS carrier: rate normalization, OAuth token reuse and refresh, and error scenarios (401, 429, malformed JSON, timeout), all using stubbed HTTP and OAuth.
 
-### Deployment <a id="deployment"></a>
-
-Build for production, then deploy (e.g. [Vercel](https://vercel.com/new) or [Next.js deployment docs](https://nextjs.org/docs/app/building-your-application/deploying)):
-
-```bash
-npm run build
-npm run start
-```
-
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
----
 
 ## 👥 Authors <a id="authors"></a>
 
-👤 **Your Name**
+👤 **Daniel Ochuba**
 
 - GitHub: [@danielochuba](https://github.com/danielochuba)
 - LinkedIn: [Daniel Ochuba Ugochukwu](https://www.linkedin.com/in/daniel-ochuba-ugochukwu)
@@ -347,10 +347,3 @@ If you find this project useful, please consider giving it a star.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
----
-
-## 📝 License <a id="license"></a>
-
-This project is [MIT](./LICENSE) licensed.
-
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
