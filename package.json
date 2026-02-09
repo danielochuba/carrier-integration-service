@@ -7,8 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "vitest run",
-    "test:watch": "vitest"
+    "test": "vitest run --reporter=verbose",
+    "test:watch": "vitest --reporter=verbose",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@trpc/server": "^11.9.0",
