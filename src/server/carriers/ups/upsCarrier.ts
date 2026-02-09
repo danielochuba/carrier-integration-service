@@ -5,6 +5,7 @@
 
 import type { Carrier } from "@/ports/carrier";
 import type { RateQuote, RateRequest } from "@/src/server/domain";
+import { CarrierRateFetchError } from "@/src/server/errors";
 import { parseRateRequest } from "@/src/server/validations";
 import { UpsOAuthClient } from "./oauthClient";
 import { mapRateRequestToUpsPayload } from "./rateRequestMapper";
@@ -56,7 +57,14 @@ export class UpsCarrier implements Carrier {
       },
     });
 
-    const body = (await response.json()) as unknown;
+    let body: unknown;
+    try {
+      body = await response.json();
+    } catch (err) {
+      throw new CarrierRateFetchError("Invalid response body", {
+        cause: err instanceof Error ? err.message : String(err),
+      });
+    }
     return mapUpsResponseToRateQuotes(body);
   }
 }

@@ -4,6 +4,12 @@
  */
 
 import { describe, it, expect, beforeEach } from "vitest";
+import {
+  CarrierValidationError,
+  CarrierRateFetchError,
+  CarrierTimeoutError,
+  isCarrierIntegrationError,
+} from "@/src/server/errors";
 import { UpsCarrier } from "./upsCarrier";
 import { UpsOAuthClient } from "./oauthClient";
 import type { RateRequest } from "@/src/server/domain";
@@ -130,5 +136,98 @@ describe("UpsCarrier", () => {
     const quotes = await carrier.getRates(VALID_RATE_REQUEST);
 
     expect(quotes).toEqual([]);
+  });
+
+  describe("error scenarios", () => {
+    it("returns structured error on 401 unauthorized", async () => {
+      const stub: RateHttpClient = {
+        post: async () => {
+          throw new CarrierValidationError("Request failed with status 401", {
+            statusCode: 401,
+            statusText: "Unauthorized",
+          });
+        },
+      };
+
+      const carrier = new UpsCarrier({ oauthClient }, stub);
+
+      const err = await carrier
+        .getRates(VALID_RATE_REQUEST)
+        .then(() => null, (e: unknown) => e);
+
+      expect(isCarrierIntegrationError(err)).toBe(true);
+      expect((err as CarrierValidationError).toJSON()).toEqual({
+        code: "CARRIER_VALIDATION",
+        message: "Request failed with status 401",
+        details: { statusCode: 401, statusText: "Unauthorized" },
+      });
+    });
+
+    it("returns structured error on 429 rate limit", async () => {
+      const stub: RateHttpClient = {
+        post: async () => {
+          throw new CarrierValidationError("Request failed with status 429", {
+            statusCode: 429,
+            statusText: "Too Many Requests",
+          });
+        },
+      };
+
+      const carrier = new UpsCarrier({ oauthClient }, stub);
+
+      const err = await carrier
+        .getRates(VALID_RATE_REQUEST)
+        .then(() => null, (e: unknown) => e);
+
+      expect(isCarrierIntegrationError(err)).toBe(true);
+      const json = (err as CarrierValidationError).toJSON();
+      expect(json.code).toBe("CARRIER_VALIDATION");
+      expect(json.details).toMatchObject({ statusCode: 429 });
+    });
+
+    it("returns structured error on malformed JSON response", async () => {
+      const stub: RateHttpClient = {
+        post: async () =>
+          new Response("{ invalid", {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          }),
+      };
+
+      const carrier = new UpsCarrier({ oauthClient }, stub);
+
+      const err = await carrier
+        .getRates(VALID_RATE_REQUEST)
+        .then(() => null, (e: unknown) => e);
+
+      expect(isCarrierIntegrationError(err)).toBe(true);
+      const json = (err as CarrierRateFetchError).toJSON();
+      expect(json.code).toBe("CARRIER_RATE_FETCH_FAILED");
+      expect(json.message).toBe("Invalid response body");
+      expect(json.details?.cause).toBeDefined();
+    });
+
+    it("returns structured error on network timeout", async () => {
+      const stub: RateHttpClient = {
+        post: async () => {
+          throw new CarrierTimeoutError("Request timed out", {
+            cause: "AbortError",
+          });
+        },
+      };
+
+      const carrier = new UpsCarrier({ oauthClient }, stub);
+
+      const err = await carrier
+        .getRates(VALID_RATE_REQUEST)
+        .then(() => null, (e: unknown) => e);
+
+      expect(isCarrierIntegrationError(err)).toBe(true);
+      expect((err as CarrierTimeoutError).toJSON()).toEqual({
+        code: "CARRIER_TIMEOUT",
+        message: "Request timed out",
+        details: { cause: "AbortError" },
+      });
+    });
   });
 });
