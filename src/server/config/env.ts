@@ -35,7 +35,8 @@ export function loadEnv(): Env {
   const raw = process.env;
 
   for (const key of REQUIRED_KEYS) {
-    if (raw[key] === undefined || raw[key] === "") {
+    const value: string | undefined = raw[key];
+    if (value === undefined || value === "") {
       throw new Error(`Missing required environment variable: ${key}`);
     }
   }

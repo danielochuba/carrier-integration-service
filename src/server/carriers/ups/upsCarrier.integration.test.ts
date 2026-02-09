@@ -147,7 +147,9 @@ describe("UpsCarrier", () => {
 
     expect(capturedPath).toBe("/rating/v2409/Shop");
     expect(capturedBody).not.toBeNull();
-    const rateReq = (capturedBody as Record<string, unknown>).RateRequest as Record<string, unknown>;
+    if (capturedBody === null) throw new Error("unreachable");
+    const body: Record<string, unknown> = capturedBody;
+    const rateReq = body.RateRequest as Record<string, unknown>;
     expect(rateReq).toBeDefined();
     const shipment = rateReq.Shipment as Record<string, unknown>;
     expect(shipment).toBeDefined();

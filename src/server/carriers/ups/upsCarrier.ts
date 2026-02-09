@@ -50,7 +50,7 @@ export class UpsCarrier implements Carrier {
     const payload = mapRateRequestToUpsPayload(validated);
     const token = await this.oauthClient.getAccessToken();
 
-    const response = await this.httpClient.post(this.ratingPath, payload, {
+    const response = await this.httpClient.post(this.ratingPath, payload as unknown as Record<string, unknown>, {
       headers: {
         Authorization: `Bearer ${token}`,
         "Content-Type": "application/json",
